@@ -65,6 +65,7 @@ BEGIN_MESSAGE_MAP(CMFCChatServerDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_START_BTN, &CMFCChatServerDlg::OnBnClickedStartBtn)
 END_MESSAGE_MAP()
 
 
@@ -153,3 +154,20 @@ HCURSOR CMFCChatServerDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CMFCChatServerDlg::OnBnClickedStartBtn()
+{
+	// 【启动按钮】
+	TRACE("OnBnClickedStartBtn");
+	CString cstrPort;//保存输入的端口号
+
+	//从控件中获取内容
+	GetDlgItem(IDC_PORT_EDIT)->GetWindowText(cstrPort);//获取控件中的端口号
+
+	//将CString转为char*
+	USES_CONVERSION;
+	LPCSTR szPort = (LPCSTR)T2A(cstrPort);
+	
+	TRACE("szPort = %s", szPort);
+}
