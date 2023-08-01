@@ -159,6 +159,8 @@ HCURSOR CMFCChatClientDlg::OnQueryDragIcon()
 void CMFCChatClientDlg::OnBnClickedConnectButton()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	
-	
+	TRACE(_T("[button]啦啦啦"));
+	TRACE(_T("[button]哈哈哈"));
+	TRACE(_T("[button]嘿嘿嘿"));
+	TRACE(_T("[button]嘻嘻嘻"));
 }
