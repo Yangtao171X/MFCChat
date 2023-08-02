@@ -68,6 +68,7 @@ BEGIN_MESSAGE_MAP(CMFCChatClientDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_CONNECT_BUTTON, &CMFCChatClientDlg::OnBnClickedConnectButton)
+	ON_BN_CLICKED(IDC_SEND_BUTTON, &CMFCChatClientDlg::OnBnClickedSendButton)
 END_MESSAGE_MAP()
 
 
@@ -188,8 +189,39 @@ void CMFCChatClientDlg::OnBnClickedConnectButton()
 	}
 	//连接套接字
 	int iPort = _ttoi(cstrPort);//将CString转为int
-	m_clientSocket->Connect(cstrIP, iPort);//连接
-
+	if (m_clientSocket->Connect(cstrIP, iPort) != 0) {//CAsyncSocket::Connect()函数，连接成功返回非0，连接失败返回0
+		TRACE("---【error】：客户端连接服务器失败，错误码：%d---", GetLastError());
+		return;
+	}
 
 	TRACE("---szPort = %s，szIP = %s---", szPort, szIP);
+}
+
+
+void CMFCChatClientDlg::OnBnClickedSendButton()
+{
+	TRACE("---CMFCChatClientDlg::OnBnClickedSendButton---");
+	//【客户端发送按钮】
+
+	//获取编辑框要发送的内容
+	CString strSendMsg;
+	GetDlgItem(IDC_MSG_EDIT)->GetWindowText(strSendMsg);
+	//将发送内容从CString转为char*的发送缓冲区
+	USES_CONVERSION;
+	LPCSTR szSendBuffer = T2A(strSendMsg);
+	TRACE("---客户端要发送的信息：%s---", szSendBuffer);
+
+	//发送到服务器端
+	m_clientSocket->Send(szSendBuffer, 200, 0);
+	//获取当前时间，并拼接发送内容
+	CString strTime;
+	m_time = CTime::GetCurrentTime();
+	strTime = m_time.Format("%X");
+	CString strShow = strTime + _T(" 【客户端】：") + strSendMsg;
+	//将拼接好的发送内容显示到历史记录列表框
+	m_listBox.AddString(strShow);
+	//更新列表框控件变量值
+	m_listBox.UpdateData(FALSE);
+	//发送后清空编辑框
+	GetDlgItem(IDC_MSG_EDIT)->SetWindowText(_T(""));
 }

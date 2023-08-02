@@ -2,7 +2,6 @@
 #include "CMySocket.h"
 
 #include "MFCChatClientDlg.h"//引入Dlg窗口的头文件
-
 CMySocket::CMySocket() {
 
 }
@@ -26,4 +25,22 @@ void	CMySocket::OnConnect(int nErrorCode) {
 
 void CMySocket::OnReceive(int nErrorCode) {
 	TRACE("---CMySocket::OnReceive---");
+	//获取Dlg窗口对象
+	CMFCChatClientDlg* dlg = (CMFCChatClientDlg*)AfxGetApp()->GetMainWnd();
+	//创建接收缓冲区
+	char recvBuffer[200];
+	//接收服务器端发送过来的数据到接收缓冲区
+	dlg->m_clientSocket->Receive(recvBuffer, 200, 0);
+	//将接收缓冲区数据转为CString
+	USES_CONVERSION;
+	CString strRecvBuffer = A2W(recvBuffer);
+	//将缓冲区数据拼接额外数据后
+	dlg->m_time = CTime::GetCurrentTime();
+	CString strTime = dlg->m_time.Format("%X");
+	CString strShow = strTime + _T(" 【服务器端】：") + strRecvBuffer;
+	//将拼接好的缓冲区数据显示到记录列表框
+	dlg->m_listBox.AddString(strShow);
+	//回调父类OnReceive()函数
+	CAsyncSocket::OnReceive(nErrorCode);
+
 }

@@ -67,6 +67,7 @@ BEGIN_MESSAGE_MAP(CMFCChatServerDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_START_BTN, &CMFCChatServerDlg::OnBnClickedStartBtn)
+	ON_BN_CLICKED(IDC_SEND_BTN, &CMFCChatServerDlg::OnBnClickedSendBtn)
 END_MESSAGE_MAP()
 
 
@@ -199,6 +200,33 @@ void CMFCChatServerDlg::OnBnClickedStartBtn()
 	str += _T("建立服务！");//拼接
 	//将CString提示信息放入历史记录的ListBox中
 	m_listBox.AddString(str);
-	//更新控件变量值
+	//更新ListBox控件变量值
 	UpdateData(FALSE);
+}
+
+
+void CMFCChatServerDlg::OnBnClickedSendBtn()
+{
+	// 【服务端发送按钮】
+	TRACE("---CMFCChatServerDlg::OnBnClickedSendBtn---");
+	//获取发送编辑框要发送的内容
+	CString strSendMsg;
+	GetDlgItem(IDC_MSG_EDIT)->GetWindowText(strSendMsg);
+	//将发送的内容从CString转为char*
+	USES_CONVERSION;
+	LPCSTR szSendBuffer = T2A(strSendMsg);
+	TRACE("---客户端要发送的信息：%s---", szSendBuffer);
+
+	//发送到客户端
+	m_chatSocket->Send(szSendBuffer, 200, 0);
+	//将要发送的内容拼接额外信息
+	m_time = CTime::GetCurrentTime();
+	CString strTime = m_time.Format("%X");
+	CString strShow = strTime + _T(" 【服务器端】：") + strSendMsg;
+	//将拼接好的发送内容放入记录列表框中
+	m_listBox.AddString(strShow);
+	//更新列表框控件变量的值
+	m_listBox.UpdateData(FALSE);
+	//发送后清空编辑框
+	GetDlgItem(IDC_MSG_EDIT)->SetWindowText(_T(""));
 }

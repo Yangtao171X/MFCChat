@@ -40,4 +40,5 @@ public:
 	CListBox m_listBox;//历史记录列表框
 	CTime m_time;//时间
 
+	afx_msg void OnBnClickedSendBtn();
 };
