@@ -17,12 +17,14 @@ void CServerSocket::OnAccept(int nErrorCode) {
 	//使用回调函数，接受临时连接套接字的连接
 	CAsyncSocket::Accept(*(dlg->m_chatSocket));
 	//获取并格式化当前时间，再拼接成提示信息，存入CString
-	CString str;
+	/*
 	dlg->m_time = CTime::GetCurrentTime();//获取当前时间
-	str = dlg->m_time.Format("%X");
-	str += _T("客户端连接成功！");
+	CString strShow = dlg->m_time.Format("%X");
+	strShow += _T("客户端连接成功！");
+	*/
+	CString strShow = dlg->CatShowMessage(_T("客户端连接成功！"), _T(""));
 	//将CString提示信息放入历史记录的ListBox中
-	dlg->m_listBox.AddString(str);
+	dlg->m_listBox.AddString(strShow);
 	//更新控件变量值
 	dlg->m_listBox.UpdateData(FALSE);
 	//回调父类的OnAccept()函数

@@ -190,16 +190,18 @@ void CMFCChatServerDlg::OnBnClickedStartBtn()
 		TRACE("---【error】：服务器端监听错误，错误码：%d---", GetLastError());
 		return;
 	}
-
 	//Listen()后自动跳到CServerSocket::OnAccept()
 
 	//获取并格式化当前时间，再拼接成提示信息，存入CString
-	CString str;
-	m_time = CTime::GetCurrentTime();//获取当前时间
-	str = m_time.Format("%X");//格式化
-	str += _T("建立服务！");//拼接
+	/*
+	m_time = ctime::getcurrenttime();//获取当前时间
+	cstring strshow = m_time.format("%x");//格式化
+	strshow += _t("建立服务！");//拼接
+	*/
+	CString strShow = this->CatShowMessage(_T("建立服务！"), _T(""));
+
 	//将CString提示信息放入历史记录的ListBox中
-	m_listBox.AddString(str);
+	m_listBox.AddString(strShow);
 	//更新ListBox控件变量值
 	UpdateData(FALSE);
 }
@@ -218,15 +220,27 @@ void CMFCChatServerDlg::OnBnClickedSendBtn()
 	TRACE("---客户端要发送的信息：%s---", szSendBuffer);
 
 	//发送到客户端
-	m_chatSocket->Send(szSendBuffer, 200, 0);
+	m_chatSocket->Send(szSendBuffer, SERVER_MAX_BUF, 0);
 	//将要发送的内容拼接额外信息
+	/*
 	m_time = CTime::GetCurrentTime();
 	CString strTime = m_time.Format("%X");
 	CString strShow = strTime + _T(" 【服务器端】：") + strSendMsg;
+	*/
+	CString strShow = this->CatShowMessage(_T(" 【服务器端】："), strSendMsg);
 	//将拼接好的发送内容放入记录列表框中
 	m_listBox.AddString(strShow);
 	//更新列表框控件变量的值
 	m_listBox.UpdateData(FALSE);
 	//发送后清空编辑框
 	GetDlgItem(IDC_MSG_EDIT)->SetWindowText(_T(""));
+}
+
+CString CMFCChatServerDlg::CatShowMessage(CString strNickName, CString strSendMsg) {
+	//获取当前时间
+	m_time = CTime::GetCurrentTime();
+	CString strTime = m_time.Format("%X");
+	//拼接
+	CString strShow = strTime + strNickName + strSendMsg;
+	return strShow;
 }

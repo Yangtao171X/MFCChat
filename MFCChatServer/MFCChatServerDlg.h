@@ -6,6 +6,8 @@
 
 #include "CServerSocket.h"
 #include "CChatSocket.h"
+
+#define SERVER_MAX_BUF 1024 //服务器端发送/接收缓冲区最大值
 // CMFCChatServerDlg 对话框
 class CMFCChatServerDlg : public CDialogEx
 {
@@ -41,4 +43,6 @@ public:
 	CTime m_time;//时间
 
 	afx_msg void OnBnClickedSendBtn();
+	//自定义的拼接数据函数（拼接规则：时间+昵称+发送信息，内部获取当前时间）
+	CString CatShowMessage(CString strNickName, CString strSendMsg);
 };

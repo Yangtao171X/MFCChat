@@ -212,16 +212,28 @@ void CMFCChatClientDlg::OnBnClickedSendButton()
 	TRACE("---客户端要发送的信息：%s---", szSendBuffer);
 
 	//发送到服务器端
-	m_clientSocket->Send(szSendBuffer, 200, 0);
+	m_clientSocket->Send(szSendBuffer, CLIENT_MAX_BUF, 0);
 	//获取当前时间，并拼接发送内容
+	/*
 	CString strTime;
 	m_time = CTime::GetCurrentTime();
 	strTime = m_time.Format("%X");
 	CString strShow = strTime + _T(" 【客户端】：") + strSendMsg;
+	*/
+	CString strShow = this->CatShowMessage(_T(" 【客户端】："), strSendMsg);
 	//将拼接好的发送内容显示到历史记录列表框
 	m_listBox.AddString(strShow);
 	//更新列表框控件变量值
 	m_listBox.UpdateData(FALSE);
 	//发送后清空编辑框
 	GetDlgItem(IDC_MSG_EDIT)->SetWindowText(_T(""));
+}
+
+CString CMFCChatClientDlg::CatShowMessage(CString strNickName, CString strSendMsg) {
+	//获取当前时间
+	m_time = CTime::GetCurrentTime();
+	CString strTime = m_time.Format("%X");
+	//拼接
+	CString strShow = strTime + strNickName + strSendMsg;
+	return strShow;
 }

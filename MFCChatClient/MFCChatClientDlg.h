@@ -5,6 +5,7 @@
 #pragma once
 
 #include "CMySocket.h"
+#define CLIENT_MAX_BUF 1024 //发送/接收缓冲区大小
 
 // CMFCChatClientDlg 对话框
 class CMFCChatClientDlg : public CDialogEx
@@ -41,4 +42,7 @@ public:
 	CTime m_time;
 	CEdit m_inputEdit;//输入框
 	afx_msg void OnBnClickedSendButton();
+
+	//自定义的拼接数据函数
+	CString CatShowMessage(CString strNickName, CString strSendMsg);
 };
