@@ -4,7 +4,8 @@
 
 #pragma once
 
-
+#include "CServerSocket.h"
+#include "CChatSocket.h"
 // CMFCChatServerDlg 对话框
 class CMFCChatServerDlg : public CDialogEx
 {
@@ -33,4 +34,10 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedStartBtn();
+public:
+	CServerSocket* m_serverSocket;//服务器端套接字对象
+	CChatSocket* m_chatSocket;//连接后的临时套接字
+	CListBox m_listBox;//历史记录列表框
+	CTime m_time;//时间
+
 };

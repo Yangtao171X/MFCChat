@@ -59,6 +59,7 @@ CMFCChatServerDlg::CMFCChatServerDlg(CWnd* pParent /*=nullptr*/)
 void CMFCChatServerDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_MSG_LIST, m_listBox);
 }
 
 BEGIN_MESSAGE_MAP(CMFCChatServerDlg, CDialogEx)
@@ -101,6 +102,9 @@ BOOL CMFCChatServerDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+
+	//【设置默认端口号的值】
+	GetDlgItem(IDC_PORT_EDIT)->SetWindowText(_T("5000"));
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -159,15 +163,42 @@ HCURSOR CMFCChatServerDlg::OnQueryDragIcon()
 void CMFCChatServerDlg::OnBnClickedStartBtn()
 {
 	// 【启动按钮】
-	TRACE("OnBnClickedStartBtn");
+	TRACE("---OnBnClickedStartBtn---");
 	CString cstrPort;//保存输入的端口号
 
 	//从控件中获取内容
 	GetDlgItem(IDC_PORT_EDIT)->GetWindowText(cstrPort);//获取控件中的端口号
-
 	//将CString转为char*
 	USES_CONVERSION;
 	LPCSTR szPort = (LPCSTR)T2A(cstrPort);
-	
-	TRACE("szPort = %s", szPort);
+	TRACE("---szPort = %s---", szPort);
+
+	//创建服务器端套接字对象
+	m_serverSocket = new CServerSocket();
+	//创建服务器端套接字
+	int iPort = _ttoi(cstrPort);//CString转为int
+	if (!m_serverSocket->Create(iPort)) {
+		TRACE("---【error】：服务器端套接字创建失败，错误码：%d---", GetLastError());
+		return;
+	}
+	else {
+		TRACE("---服务器端套接字创建成功！---");
+	}
+	//使用套接字进行监听
+	if (!m_serverSocket->Listen()) {
+		TRACE("---【error】：服务器端监听错误，错误码：%d---", GetLastError());
+		return;
+	}
+
+	//Listen()后自动跳到CServerSocket::OnAccept()
+
+	//获取并格式化当前时间，再拼接成提示信息，存入CString
+	CString str;
+	m_time = CTime::GetCurrentTime();//获取当前时间
+	str = m_time.Format("%X");//格式化
+	str += _T("建立服务！");//拼接
+	//将CString提示信息放入历史记录的ListBox中
+	m_listBox.AddString(str);
+	//更新控件变量值
+	UpdateData(FALSE);
 }

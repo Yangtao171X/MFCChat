@@ -59,6 +59,8 @@ CMFCChatClientDlg::CMFCChatClientDlg(CWnd* pParent /*=nullptr*/)
 void CMFCChatClientDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_MSG_LIST, m_listBox);
+	DDX_Control(pDX, IDC_MSG_EDIT, m_inputEdit);
 }
 
 BEGIN_MESSAGE_MAP(CMFCChatClientDlg, CDialogEx)
@@ -101,6 +103,10 @@ BOOL CMFCChatClientDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+
+	//【设置客户端界面的默认端口号、默认IP地址】
+	GetDlgItem(IDC_PORT_EDIT)->SetWindowText(_T("5000"));
+	GetDlgItem(IDC_IPADDRESS)->SetWindowText(_T("127.0.0.1"));
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -159,7 +165,7 @@ HCURSOR CMFCChatClientDlg::OnQueryDragIcon()
 void CMFCChatClientDlg::OnBnClickedConnectButton()
 {
 	// 【连接按钮】
-	TRACE("OnBnClickedConnectButton");
+	TRACE("---OnBnClickedConnectButton---");
 
 	CString cstrPort, cstrIP;//分别保存用户输入的端口号和IP
 	//从控件中获取内容
@@ -170,5 +176,20 @@ void CMFCChatClientDlg::OnBnClickedConnectButton()
 	LPCSTR szPort = (LPCSTR)T2A(cstrPort);
 	LPCSTR szIP = (LPSTR)T2A(cstrIP);
 	
-	TRACE("szPort = %s，szIP = %s", szPort, szIP);
+	//创建客户端套接字对象
+	m_clientSocket = new CMySocket();
+	//创建套接字，并设置合法性检查
+	if (!m_clientSocket->Create()) {//若创建失败
+		TRACE("---【error】：客户端套接字创建失败，错误码：%d---", GetLastError());
+		return;
+	}
+	else {
+		TRACE("---客户端套接字创建成功！---");
+	}
+	//连接套接字
+	int iPort = _ttoi(cstrPort);//将CString转为int
+	m_clientSocket->Connect(cstrIP, iPort);//连接
+
+
+	TRACE("---szPort = %s，szIP = %s---", szPort, szIP);
 }
